@@ -3,71 +3,88 @@ import { useUser } from '../Contexts';
 
 const SignUp = () => {
 
-    const { addUser, users } = useUser();
+  const { addUser, users } = useUser();
 
-    const [newUserName, setNewUserName] = useState('');
-    const [newUserEmail, setNewUserEmail] = useState('');
-    const [newUserPassword, setNewUserPassword] = useState('');
-    const [clickButton, setClickButton] = useState(false);
+  const [newUserName, setNewUserName] = useState('');
+  const [newUserEmail, setNewUserEmail] = useState('');
+  const [newUserPassword, setNewUserPassword] = useState('');
+
+  const [clickButton, setClickButton] = useState(false);
+
+  const submitSignUpForm = (e) => {
+    e.preventDefault();
+    setClickButton((prev) => !prev);
+  }
 
 
-    const submitSignUpForm = (e) => {
-        e.preventDefault();
+  useEffect(() => {
+    if (clickButton) {
+      // Check if the email already exists in the users array
+      // we use 'some' method that return 'true' or 'false'
 
-        setClickButton((prev) => !prev);
-        // addUser({userName: newUserName, userEmail: newUserEmail , userPassword:newUserPassword});
+      const emailExists = users.some(
+        (user) => user.userEmail === newUserEmail
+      );
 
-        // setNewUserName('');
-        // setNewUserEmail('');
-        // setNewUserPassword('');
+      if (!emailExists && newUserName) {
+        addUser({
+          userName: newUserName.toLocaleLowerCase(),
+          userEmail: newUserEmail,
+          userPassword: newUserPassword,
+        });
+
+        setNewUserName('');
+        setNewUserEmail('');
+        setNewUserPassword('');
+
+        setClickButton((prev) => !prev); // Set clickButton to false after successful addition
+        console.log("User added successfully");
+
+      } else {
+        console.log("Email already exists. Choose a different email.");
+        setClickButton((prev) => !prev); // Set clickButton to false after successful addition
+      }
     }
-
-    useEffect(() => {
-        // addUser({userName: newUserName, userEmail: newUserEmail , userPassword:newUserPassword});
-        if (clickButton) {
-
-            for (let i = 0; i < users.length; i++) {
-
-                if (users.length > 0) {
-                    if (users[i].userEmail !== newUserEmail) {
-                        addUser({ userName: newUserName, userEmail: newUserEmail, userPassword: newUserPassword });
-                        setClickButton((prev) => !prev);
-                    }
-                }else{
-                    addUser({ userName: newUserName, userEmail: newUserEmail, userPassword: newUserPassword });
-                        setClickButton((prev) => !prev);
-                    }
-            }
-            console.log(`click button`);
-        }
-
-    }, [clickButton])
+  }, [clickButton]);
 
 
-    return (
-        <div className="w-full flex justify-center items-center p-8 ">
+  return (
+    <div className="w-full flex justify-center items-center p-8 ">
 
-            <form onSubmit={submitSignUpForm} className="w-1/2 h-96 bg-slate-800 flex flex-col justify-center items-center rounded-3xl">
-                <h2 className="text-slate-200 text-3xl">Sign Up</h2>
-                <input className="w-1/2 h-16 rounded-2xl pl-4 outline-none m-2" type="text"
+      <form onSubmit={submitSignUpForm} className="w-1/2 h-96 bg-slate-800 flex flex-col justify-center items-center rounded-3xl">
+        <h2 className="text-slate-200 text-3xl">Sign Up</h2>
 
-                    onChange={(e) => setNewUserName(e.target.value)}
-                    value={newUserName}
-                />
-                <input className="w-1/2 h-16 rounded-2xl pl-4 outline-none m-2" type="email"
+        
+        {/* user name section */}
+        <input className="w-1/2 h-16 rounded-2xl pl-4 outline-none m-2 text-cyan-700 text-xl " type="text"
+          required
+          onChange={(e) => setNewUserName(e.target.value)}
+          value={newUserName}
+          placeholder='enter username'
+        />
 
-                    onChange={(e) => setNewUserEmail(e.target.value)}
-                    value={newUserEmail}
-                />
-                <input className="w-1/2 h-16 rounded-2xl pl-4 outline-none m-2" type="password"
+        {/* user Email section */}
+        <input className="w-1/2 h-16 rounded-2xl pl-4 outline-none m-2 text-cyan-700 text-xl " type="email"
+          required
+          onChange={(e) => setNewUserEmail(e.target.value)}
+          value={newUserEmail}
+          placeholder='enter email address'
+        />
 
-                    onChange={(e) => setNewUserPassword(e.target.value)}
-                    value={newUserPassword}
-                />
-                <button className="w-20 h-14 rounded-2xl p-2 outline-none mt-2 border-x-2 border-y-2 border-slate-200 text-slate-200">Submit</button>
-            </form>
-        </div>
-    )
+        {/* user password section */}
+        <input className="w-1/2 h-16 rounded-2xl pl-4 outline-none m-2 text-cyan-700 text-xl " type="password"
+          required
+          onChange={(e) => setNewUserPassword(e.target.value)}
+          value={newUserPassword}
+          placeholder='enter password'
+        />
+
+        <button className="w-20 h-14 rounded-2xl p-2 outline-none mt-2 border-x-2 border-y-2 border-slate-200 text-slate-200">Submit</button>
+
+      </form>
+
+    </div>
+  )
 }
 
 export default SignUp
